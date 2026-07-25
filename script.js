@@ -2,7 +2,7 @@
 // CONFIGURATION SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
-const SUPABASE_KEY = "COLLE_TA_CLE_ANON_ICI";
+const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qkVKYmsT";
 
 const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
 
