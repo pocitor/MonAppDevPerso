@@ -1,4 +1,80 @@
 // ==========================================
+// CONFIGURATION SUPABASE
+// ==========================================
+const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
+const SUPABASE_KEY = "COLLE_TA_CLE_ANON_ICI";
+
+const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let tasks = [];
+
+// Charger les tâches depuis la base de données au démarrage
+fetchTasks();
+
+// Écouter les changements EN TEMPS RÉEL (Synchro PC / Tel)
+supabase
+  .channel('schema-db-changes')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
+    fetchTasks(); // Réactualise la liste automatiquement dès qu'un appareil modifie une tâche
+  })
+  .subscribe();
+
+// 1. Récupérer toutes les tâches depuis Supabase
+async function fetchTasks() {
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error("Erreur de chargement :", error);
+  } else {
+    tasks = data;
+    renderTasks();
+  }
+}
+
+// 2. Ajouter une tâche dans Supabase
+async function addTask() {
+  const input = document.getElementById('taskInput');
+  const text = input.value.trim();
+
+  if (text !== '') {
+    const { error } = await supabase
+      .from('tasks')
+      .insert([{ text: text, completed: false }]);
+
+    if (!error) {
+      input.value = '';
+      fetchTasks();
+    }
+  }
+}
+
+// 3. Cocher / Décocher une tâche dans Supabase
+async function toggleTask(index) {
+  const task = tasks[index];
+  
+  await supabase
+    .from('tasks')
+    .update({ completed: !task.completed })
+    .eq('id', task.id);
+
+  fetchTasks();
+}
+
+// 4. Supprimer une tâche dans Supabase
+async function deleteTask(index) {
+  const task = tasks[index];
+
+  await supabase
+    .from('tasks')
+    .delete()
+    .eq('id', task.id);
+
+  fetchTasks();
+}
+// ==========================================
 // 1. NAVIGATION ENTRE ONGLETS
 // ==========================================
 function switchTab(tabName) {
