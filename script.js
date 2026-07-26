@@ -2,7 +2,7 @@
 // CONFIGURATION SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qKVKYmsT"; 
+const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qkVKYmsT"; 
 
 // On nomme la variable "db" au lieu de "supabase"
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
