@@ -2,9 +2,7 @@
 // CONFIGURATION SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
-
-// ⚠️ REMPLACE LA LIGNE CI-DESSOUS AVEC TA VRAIE CLÉ "anon" ENTRE LES GUILLEMETS ⚠️
-const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qkVKYmsT";
+const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qKVK YmsT";
 
 const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -24,10 +22,10 @@ function switchTab(tabName) {
 // ==========================================
 let tasks = [];
 
-// Charger les tâches depuis la base au démarrage
+// Charger les tâches au démarrage
 fetchTasks();
 
-// Écouter les changements en TEMPS RÉEL (Synchro PC / Téléphone)
+// Écouter la synchro en TEMPS RÉEL
 supabase
   .channel('schema-db-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
@@ -91,7 +89,7 @@ async function deleteTask(index) {
   fetchTasks();
 }
 
-// 5. Générer le HTML des tâches à l'écran
+// 5. Rendu HTML
 function renderTasks() {
   const list = document.getElementById('taskList');
   list.innerHTML = '';
