@@ -163,3 +163,12 @@ function toggleTimer() {
     }, 1000);
   }
 }
+
+// Enregistrement du Service Worker pour la PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker enregistré avec succès !'))
+      .catch((err) => console.error('Erreur Service Worker :', err));
+  });
+}
