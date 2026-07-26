@@ -2,9 +2,11 @@
 // CONFIGURATION SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qKVK YmsT";
+// Nettoyage de la clé (sans espace)
+const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qKVKYmsT"; 
 
-const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Initialisation du client Supabase
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================
 // 1. NAVIGATION ENTRE ONGLETS
@@ -25,7 +27,7 @@ let tasks = [];
 // Charger les tâches au démarrage
 fetchTasks();
 
-// Écouter la synchro en TEMPS RÉEL
+// Écouter les changements en TEMPS RÉEL (Synchro PC / Téléphone)
 supabase
   .channel('schema-db-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
@@ -61,6 +63,8 @@ async function addTask() {
     if (!error) {
       input.value = '';
       fetchTasks();
+    } else {
+      console.error("Erreur d'ajout :", error);
     }
   }
 }
@@ -89,9 +93,10 @@ async function deleteTask(index) {
   fetchTasks();
 }
 
-// 5. Rendu HTML
+// 5. Générer le HTML
 function renderTasks() {
   const list = document.getElementById('taskList');
+  if (!list) return;
   list.innerHTML = '';
 
   tasks.forEach((task, index) => {
@@ -119,8 +124,10 @@ function updateTimerDisplay() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   
-  document.getElementById('timerDisplay').textContent = 
-    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const display = document.getElementById('timerDisplay');
+  if (display) {
+    display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
 }
 
 function setCustomTime(val) {
