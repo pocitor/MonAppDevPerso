@@ -4,8 +4,8 @@
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
 const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qKVKYmsT"; 
 
-// On utilise 'supabaseClient' pour éviter le conflit avec la variable globale
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// On nomme la variable "db" au lieu de "supabase"
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================
 // 1. NAVIGATION ENTRE ONGLETS
@@ -19,15 +19,14 @@ function switchTab(tabName) {
 }
 
 // ==========================================
-// 2. GESTION DES TÂCHES AVEC SUPABASE
+// 2. GESTION DES TÂCHES
 // ==========================================
 let tasks = [];
 
-// Charger les tâches au démarrage
 fetchTasks();
 
-// Écouter les changements en TEMPS RÉEL (Synchro PC / Téléphone)
-supabaseClient
+// Synchro temps réel
+db
   .channel('schema-db-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
     fetchTasks();
@@ -36,7 +35,7 @@ supabaseClient
 
 // 1. Récupérer les tâches
 async function fetchTasks() {
-  const { data, error } = await supabaseClient
+  const { data, error } = await db
     .from('tasks')
     .select('*')
     .order('id', { ascending: true });
@@ -55,15 +54,13 @@ async function addTask() {
   const text = input.value.trim();
 
   if (text !== '') {
-    const { error } = await supabaseClient
+    const { error } = await db
       .from('tasks')
       .insert([{ text: text, completed: false }]);
 
     if (!error) {
       input.value = '';
       fetchTasks();
-    } else {
-      console.error("Erreur d'ajout :", error);
     }
   }
 }
@@ -72,7 +69,7 @@ async function addTask() {
 async function toggleTask(index) {
   const task = tasks[index];
   
-  await supabaseClient
+  await db
     .from('tasks')
     .update({ completed: !task.completed })
     .eq('id', task.id);
@@ -84,7 +81,7 @@ async function toggleTask(index) {
 async function deleteTask(index) {
   const task = tasks[index];
 
-  await supabaseClient
+  await db
     .from('tasks')
     .delete()
     .eq('id', task.id);
@@ -92,7 +89,7 @@ async function deleteTask(index) {
   fetchTasks();
 }
 
-// 5. Générer le HTML
+// 5. Rendu
 function renderTasks() {
   const list = document.getElementById('taskList');
   if (!list) return;
@@ -112,7 +109,7 @@ function renderTasks() {
 }
 
 // ==========================================
-// 3. GESTION DU MINUTEUR POMODORO
+// 3. MINUTEUR POMODORO
 // ==========================================
 let customMinutes = 25;
 let timeLeft = customMinutes * 60;
@@ -122,7 +119,6 @@ let isRunning = false;
 function updateTimerDisplay() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  
   const display = document.getElementById('timerDisplay');
   if (display) {
     display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
@@ -131,11 +127,9 @@ function updateTimerDisplay() {
 
 function setCustomTime(val) {
   if (isRunning) return;
-
   let newMinutes = parseInt(val);
   if (isNaN(newMinutes) || newMinutes < 1) newMinutes = 1;
   if (newMinutes > 180) newMinutes = 180;
-
   customMinutes = newMinutes;
   timeLeft = customMinutes * 60;
   updateTimerDisplay();
@@ -143,7 +137,6 @@ function setCustomTime(val) {
 
 function toggleTimer() {
   const startBtn = document.getElementById('startBtn');
-
   if (isRunning) {
     clearInterval(timerInterval);
     isRunning = false;
@@ -160,7 +153,7 @@ function toggleTimer() {
         updateTimerDisplay();
       } else {
         clearInterval(timerInterval);
-        alert("Session terminée ! Prends une pause bien méritée.");
+        alert("Session terminée !");
         timeLeft = customMinutes * 60;
         updateTimerDisplay();
         isRunning = false;
