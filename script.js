@@ -2,7 +2,7 @@
 // CONFIGURATION SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qkVKYmsT"; 
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6cHplbnRha3R1Ym5pbmtva2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwMDE4ODgsImV4cCI6MjEwMDU3Nzg4OH0.VCZL53p-a_XGifZUO0az6FQX4NZjxHxq7QvNyIZheXw"; 
 
 // On nomme la variable "db" au lieu de "supabase"
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
