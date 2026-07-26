@@ -2,11 +2,10 @@
 // CONFIGURATION SUPABASE
 // ==========================================
 const SUPABASE_URL = "https://wzpzentaktubninkokdr.supabase.co";
-// Nettoyage de la clé (sans espace)
 const SUPABASE_KEY = "sb_publishable_s83sxDftB7ajlGf5Y-X-bA_qKVKYmsT"; 
 
-// Initialisation du client Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// On utilise 'supabaseClient' pour éviter le conflit avec la variable globale
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================
 // 1. NAVIGATION ENTRE ONGLETS
@@ -28,7 +27,7 @@ let tasks = [];
 fetchTasks();
 
 // Écouter les changements en TEMPS RÉEL (Synchro PC / Téléphone)
-supabase
+supabaseClient
   .channel('schema-db-changes')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
     fetchTasks();
@@ -37,7 +36,7 @@ supabase
 
 // 1. Récupérer les tâches
 async function fetchTasks() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('tasks')
     .select('*')
     .order('id', { ascending: true });
@@ -56,7 +55,7 @@ async function addTask() {
   const text = input.value.trim();
 
   if (text !== '') {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('tasks')
       .insert([{ text: text, completed: false }]);
 
@@ -73,7 +72,7 @@ async function addTask() {
 async function toggleTask(index) {
   const task = tasks[index];
   
-  await supabase
+  await supabaseClient
     .from('tasks')
     .update({ completed: !task.completed })
     .eq('id', task.id);
@@ -85,7 +84,7 @@ async function toggleTask(index) {
 async function deleteTask(index) {
   const task = tasks[index];
 
-  await supabase
+  await supabaseClient
     .from('tasks')
     .delete()
     .eq('id', task.id);
